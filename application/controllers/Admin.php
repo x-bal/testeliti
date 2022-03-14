@@ -294,331 +294,331 @@ class Admin extends CI_Controller
 		}
 	}
 
-	public function list_users()
-	{
-		$data['set'] = "list-users";
-		$data['data'] = $this->m_admin->get_users();
-		$this->load->view('v_users', $data);
-	}
+	// public function list_users()
+	// {
+	// 	$data['set'] = "list-users";
+	// 	$data['data'] = $this->m_admin->get_users();
+	// 	$this->load->view('v_users', $data);
+	// }
 
-	public function add_users()
-	{
-		$data['set'] = "add-users";
-		$this->load->view('v_users', $data);
-	}
-
-
-	public function save_users()
-	{
-		if ($this->session->userdata('userlogin')) {
-			$users = $this->input->post('users');
-			$email = $this->input->post('email');
-			$username = $this->input->post('username');
-			$pass = $this->input->post('pass');
-			$hash = $this->bcrypt->hash_password($pass);
-
-			$type = explode('.', $_FILES["image"]["name"]);
-			$type = strtolower($type[count($type) - 1]);
-			$imgname = uniqid(rand()) . '.' . $type;
-			$url = "components/dist/img/" . $imgname;
-			if (in_array($type, array("jpg", "jpeg", "gif", "png"))) {
-				if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
-					if (move_uploaded_file($_FILES["image"]["tmp_name"], $url)) {
-						$data = array(
-							'nama'    => $users,
-							'email'   => $email,
-							'username' => $username,
-							'password' => $hash,
-							'avatar'  => $imgname,
-						);
-						$this->m_admin->insert_users($data);
-						$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di simpan</div>");
-					}
-				}
-			} else {
-				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di simpan, ekstensi gambar salah</div>");
-			}
-
-			redirect(base_url() . 'admin/list_users');
-		} else {
-			redirect(base_url() . 'admin');
-		}
-	}
+	// public function add_users()
+	// {
+	// 	$data['set'] = "add-users";
+	// 	$this->load->view('v_users', $data);
+	// }
 
 
-	public function hapus_users($id = null)
-	{
-		if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
-		{
-			$path = "";
-			$filename = $this->m_admin->get_user_byid($id);
-			foreach ($filename as $key) {
-				$file = $key->avatar;
-				$path = "components/dist/img/" . $file;
-			}
+	// public function save_users()
+	// {
+	// 	if ($this->session->userdata('userlogin')) {
+	// 		$users = $this->input->post('users');
+	// 		$email = $this->input->post('email');
+	// 		$username = $this->input->post('username');
+	// 		$pass = $this->input->post('pass');
+	// 		$hash = $this->bcrypt->hash_password($pass);
 
-			//echo $path;
+	// 		$type = explode('.', $_FILES["image"]["name"]);
+	// 		$type = strtolower($type[count($type) - 1]);
+	// 		$imgname = uniqid(rand()) . '.' . $type;
+	// 		$url = "components/dist/img/" . $imgname;
+	// 		if (in_array($type, array("jpg", "jpeg", "gif", "png"))) {
+	// 			if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
+	// 				if (move_uploaded_file($_FILES["image"]["tmp_name"], $url)) {
+	// 					$data = array(
+	// 						'nama'    => $users,
+	// 						'email'   => $email,
+	// 						'username' => $username,
+	// 						'password' => $hash,
+	// 						'avatar'  => $imgname,
+	// 					);
+	// 					$this->m_admin->insert_users($data);
+	// 					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di simpan</div>");
+	// 				}
+	// 			}
+	// 		} else {
+	// 			$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di simpan, ekstensi gambar salah</div>");
+	// 		}
 
-			if (file_exists($path)) {
-				unlink($path);
-				if ($this->m_admin->users_del($id)) {
-					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di hapus</div>");
-				} else {
-					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di hapus</div>");
-				}
-			} else {
-				if ($this->m_admin->users_del($id)) {
-					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di hapus image gagal dihapus</div>");
-				} else {
-					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di hapus</div>");
-				}
-			}
-
-			redirect(base_url() . 'admin/list_users');
-		} else {
-			redirect(base_url() . 'admin');
-		}
-	}
-
-
-	public function edit_users($id = null)
-	{
-		if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
-			if (isset($id)) {
-				$user = $this->m_admin->get_user_byid($id);
-				foreach ($user as $key => $value) {
-					//print_r($value);
-					$data['id'] = $id;
-					$data['nama'] = $value->nama;
-					$data['email'] = $value->email;
-					$data['username'] = $value->username;
-					$data['password'] = $value->password;
-					$data['avatar'] = $value->avatar;
-				}
-				$data['set'] = "edit-users";
-				$this->load->view('v_users', $data);
-			} else {
-				redirect(base_url() . 'admin/list_users');
-			}
-		} else {
-			redirect(base_url() . 'admin');
-		}
-	}
-
-	public function save_edit_users()
-	{
-		if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
-			if (isset($_POST['id']) && isset($_POST['email'])) {
-				$id = $this->input->post('id');
-				$email = $this->input->post('email');
-				$nama = $this->input->post('users');
-				$username = $this->input->post('username');
-				$pass = $this->input->post('pass');
-				$hash = $this->bcrypt->hash_password($pass);
+	// 		redirect(base_url() . 'admin/list_users');
+	// 	} else {
+	// 		redirect(base_url() . 'admin');
+	// 	}
+	// }
 
 
-				$type = explode('.', $_FILES["image"]["name"]);
-				$type = strtolower($type[count($type) - 1]);
-				$imgname = uniqid(rand()) . '.' . $type;
-				$url = "components/dist/img/" . $imgname;
-				if (in_array($type, array("jpg", "jpeg", "gif", "png"))) {
-					if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
-						if (move_uploaded_file($_FILES["image"]["tmp_name"], $url)) {
-							$data = array(
-								'nama'    => $users,
-								'email'   => $email,
-								'username' => $username,
-								'avatar'  => $imgname,
-							);
-							$file = $this->input->post('img');
-							$path = "components/dist/img/" . $file;
+	// public function hapus_users($id = null)
+	// {
+	// 	if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
+	// 	{
+	// 		$path = "";
+	// 		$filename = $this->m_admin->get_user_byid($id);
+	// 		foreach ($filename as $key) {
+	// 			$file = $key->avatar;
+	// 			$path = "components/dist/img/" . $file;
+	// 		}
 
-							if (file_exists($path)) {
-								unlink($path);
-							}
-							$this->m_admin->updateUser($id, $data);
-							$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di simpan</div>");
-						}
-					}
-				} else {
-					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di simpan, ekstensi gambar salah</div>");
-				}
+	// 		//echo $path;
 
-				if (isset($_POST['changepass'])) {
-					$data = array(
-						'email' => $email,
-						'nama' => $nama,
-						'username' => $username,
-						'password' => $hash,
-					);
-					if ($this->m_admin->updateUser($id, $data)) {
-						$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
-					} else {
-						$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
-					}
-				} else {
-					$data = array(
-						'email' => $email,
-						'nama' => $nama,
-						'username' => $username,
-					);
-					if ($this->m_admin->updateUser($id, $data)) {
-						$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
-					} else {
-						$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
-					}
-				}
+	// 		if (file_exists($path)) {
+	// 			unlink($path);
+	// 			if ($this->m_admin->users_del($id)) {
+	// 				$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di hapus</div>");
+	// 			} else {
+	// 				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di hapus</div>");
+	// 			}
+	// 		} else {
+	// 			if ($this->m_admin->users_del($id)) {
+	// 				$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di hapus image gagal dihapus</div>");
+	// 			} else {
+	// 				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di hapus</div>");
+	// 			}
+	// 		}
 
-				redirect(base_url() . 'admin/list_users');
-			}
-		} else {
-			redirect(base_url() . 'admin');
-		}
-	}
-
-	public function setting()
-	{
-		$data['set'] = "setting";
-		$data['key'] = $this->m_admin->getkey();
-		//print_r($data);
-		$this->load->view('v_setting', $data);
-	}
+	// 		redirect(base_url() . 'admin/list_users');
+	// 	} else {
+	// 		redirect(base_url() . 'admin');
+	// 	}
+	// }
 
 
-	public function lastabsensi()
-	{
-		if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
-		{
-			if (isset($_POST['tanggal'])) {
-				$tgl = $this->input->post('tanggal');
-				//echo $tgl;
-				$split1 = explode("-", $tgl);
-				$x = 0;
-				foreach ($split1 as $key => $value) {
-					$date[$x] = $value;
-					$x++;
-				}
+	// public function edit_users($id = null)
+	// {
+	// 	if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
+	// 		if (isset($id)) {
+	// 			$user = $this->m_admin->get_user_byid($id);
+	// 			foreach ($user as $key => $value) {
+	// 				//print_r($value);
+	// 				$data['id'] = $id;
+	// 				$data['nama'] = $value->nama;
+	// 				$data['email'] = $value->email;
+	// 				$data['username'] = $value->username;
+	// 				$data['password'] = $value->password;
+	// 				$data['avatar'] = $value->avatar;
+	// 			}
+	// 			$data['set'] = "edit-users";
+	// 			$this->load->view('v_users', $data);
+	// 		} else {
+	// 			redirect(base_url() . 'admin/list_users');
+	// 		}
+	// 	} else {
+	// 		redirect(base_url() . 'admin');
+	// 	}
+	// }
 
-				$ts1 = strtotime($date[0]);
-				$ts2 = strtotime($date[1]);
-
-				$tgl1 = date("d-M-Y", $ts1);
-				$tgl2 = date("d-M-Y", $ts2);
-
-				$ts2 += 86400;	// tambah 1 hari (hitungan detik)
-
-				// $data['tgl1'] = $tgl1;
-				// $data['tgl2'] = $tgl2;
-
-				if ($x == 2) {
-					$data['datamasuk'] = $this->m_admin->get_absensi("masuk", $ts1, $ts2);
-					$data['datakeluar'] = $this->m_admin->get_absensi("keluar", $ts1, $ts2);
-					$data['tanggal'] = $tgl1 . " - " . $tgl2;
-					$data['waktuabsensi'] = $tgl1 . "_" . $tgl2;
-
-					$data['set'] = "last-absensi";
-					$this->load->view('v_absensi', $data);
-				} else {
-					redirect(base_url() . 'admin/absensi');
-				}
-			} else {
-				redirect(base_url() . 'admin/absensi');
-			}
-		}
-	}
+	// public function save_edit_users()
+	// {
+	// 	if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
+	// 		if (isset($_POST['id']) && isset($_POST['email'])) {
+	// 			$id = $this->input->post('id');
+	// 			$email = $this->input->post('email');
+	// 			$nama = $this->input->post('users');
+	// 			$username = $this->input->post('username');
+	// 			$pass = $this->input->post('pass');
+	// 			$hash = $this->bcrypt->hash_password($pass);
 
 
-	public function export2excel()
-	{
-		if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
-		{
-			if (isset($_GET['tanggal'])) {
-				$tanggal = $this->input->get('tanggal');
-				//echo $tanggal;
+	// 			$type = explode('.', $_FILES["image"]["name"]);
+	// 			$type = strtolower($type[count($type) - 1]);
+	// 			$imgname = uniqid(rand()) . '.' . $type;
+	// 			$url = "components/dist/img/" . $imgname;
+	// 			if (in_array($type, array("jpg", "jpeg", "gif", "png"))) {
+	// 				if (is_uploaded_file($_FILES["image"]["tmp_name"])) {
+	// 					if (move_uploaded_file($_FILES["image"]["tmp_name"], $url)) {
+	// 						$data = array(
+	// 							'nama'    => $users,
+	// 							'email'   => $email,
+	// 							'username' => $username,
+	// 							'avatar'  => $imgname,
+	// 						);
+	// 						$file = $this->input->post('img');
+	// 						$path = "components/dist/img/" . $file;
 
-				$split = explode("_", $tanggal);
-				$x = 0;
-				foreach ($split as $key => $value) {
-					$date[$x] = $value;
-					$x++;
-				}
+	// 						if (file_exists($path)) {
+	// 							unlink($path);
+	// 						}
+	// 						$this->m_admin->updateUser($id, $data);
+	// 						$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di simpan</div>");
+	// 					}
+	// 				}
+	// 			} else {
+	// 				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di simpan, ekstensi gambar salah</div>");
+	// 			}
 
-				$ts1 = strtotime($date[0]);
-				$ts2 = strtotime($date[1]);
+	// 			if (isset($_POST['changepass'])) {
+	// 				$data = array(
+	// 					'email' => $email,
+	// 					'nama' => $nama,
+	// 					'username' => $username,
+	// 					'password' => $hash,
+	// 				);
+	// 				if ($this->m_admin->updateUser($id, $data)) {
+	// 					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
+	// 				} else {
+	// 					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
+	// 				}
+	// 			} else {
+	// 				$data = array(
+	// 					'email' => $email,
+	// 					'nama' => $nama,
+	// 					'username' => $username,
+	// 				);
+	// 				if ($this->m_admin->updateUser($id, $data)) {
+	// 					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
+	// 				} else {
+	// 					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
+	// 				}
+	// 			}
 
-				$ts2 += 86400;	// tambah 1 hari (hitungan detik)
+	// 			redirect(base_url() . 'admin/list_users');
+	// 		}
+	// 	} else {
+	// 		redirect(base_url() . 'admin');
+	// 	}
+	// }
 
-				$datamasuk = $this->m_admin->get_absensi("masuk", $ts1, $ts2);
-				$datakeluar = $this->m_admin->get_absensi("keluar", $ts1, $ts2);
+	// public function setting()
+	// {
+	// 	$data['set'] = "setting";
+	// 	$data['key'] = $this->m_admin->getkey();
+	// 	//print_r($data);
+	// 	$this->load->view('v_setting', $data);
+	// }
 
-				$spreadsheet = new Spreadsheet;
 
-				$spreadsheet->setActiveSheetIndex(0)
-					->setCellValue('A1', 'No')
-					->setCellValue('B1', 'Alat Absensi')
-					->setCellValue('C1', 'Nama')
-					->setCellValue('D1', 'Jabatan/Kelas')
-					->setCellValue('E1', 'Keterangan')
-					->setCellValue('F1', 'Waktu');
+	// public function lastabsensi()
+	// {
+	// 	if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
+	// 	{
+	// 		if (isset($_POST['tanggal'])) {
+	// 			$tgl = $this->input->post('tanggal');
+	// 			//echo $tgl;
+	// 			$split1 = explode("-", $tgl);
+	// 			$x = 0;
+	// 			foreach ($split1 as $key => $value) {
+	// 				$date[$x] = $value;
+	// 				$x++;
+	// 			}
 
-				$baris = 2;
-				$spreadsheet->setActiveSheetIndex(0)
-					->setCellValue('A' . $baris, "ABSENSI MASUK");
-				$baris++;
-				$nomor = 1;
+	// 			$ts1 = strtotime($date[0]);
+	// 			$ts2 = strtotime($date[1]);
 
-				if (isset($datamasuk)) {
-					foreach ($datamasuk as $masuk) {
+	// 			$tgl1 = date("d-M-Y", $ts1);
+	// 			$tgl2 = date("d-M-Y", $ts2);
 
-						$waktu = date("H:i:s d M Y", $masuk->created_at);
+	// 			$ts2 += 86400;	// tambah 1 hari (hitungan detik)
 
-						$spreadsheet->setActiveSheetIndex(0)
-							->setCellValue('A' . $baris, $nomor)
-							->setCellValue('B' . $baris, $masuk->nama_devices)
-							->setCellValue('C' . $baris, $masuk->nama)
-							->setCellValue('D' . $baris, $masuk->jabatan)
-							->setCellValue('E' . $baris, $masuk->keterangan)
-							->setCellValue('F' . $baris, $waktu);
+	// 			// $data['tgl1'] = $tgl1;
+	// 			// $data['tgl2'] = $tgl2;
 
-						$baris++;
-						$nomor++;
-					}
-				}
+	// 			if ($x == 2) {
+	// 				$data['datamasuk'] = $this->m_admin->get_absensi("masuk", $ts1, $ts2);
+	// 				$data['datakeluar'] = $this->m_admin->get_absensi("keluar", $ts1, $ts2);
+	// 				$data['tanggal'] = $tgl1 . " - " . $tgl2;
+	// 				$data['waktuabsensi'] = $tgl1 . "_" . $tgl2;
 
-				$baris++;
-				$spreadsheet->setActiveSheetIndex(0)
-					->setCellValue('A' . $baris, "ABSENSI KELUAR");
-				$baris++;
-				$nomor = 1;
+	// 				$data['set'] = "last-absensi";
+	// 				$this->load->view('v_absensi', $data);
+	// 			} else {
+	// 				redirect(base_url() . 'admin/absensi');
+	// 			}
+	// 		} else {
+	// 			redirect(base_url() . 'admin/absensi');
+	// 		}
+	// 	}
+	// }
 
-				if (isset($datakeluar)) {
-					foreach ($datakeluar as $keluar) {
 
-						$waktu = date("H:i:s d M Y", $keluar->created_at);
+	// public function export2excel()
+	// {
+	// 	if ($this->session->userdata('userlogin'))     // mencegah akses langsung tanpa login
+	// 	{
+	// 		if (isset($_GET['tanggal'])) {
+	// 			$tanggal = $this->input->get('tanggal');
+	// 			//echo $tanggal;
 
-						$spreadsheet->setActiveSheetIndex(0)
-							->setCellValue('A' . $baris, $nomor)
-							->setCellValue('B' . $baris, $keluar->nama_devices)
-							->setCellValue('C' . $baris, $keluar->nama)
-							->setCellValue('D' . $baris, $keluar->jabatan)
-							->setCellValue('E' . $baris, $keluar->keterangan)
-							->setCellValue('F' . $baris, $waktu);
+	// 			$split = explode("_", $tanggal);
+	// 			$x = 0;
+	// 			foreach ($split as $key => $value) {
+	// 				$date[$x] = $value;
+	// 				$x++;
+	// 			}
 
-						$baris++;
-						$nomor++;
-					}
-				}
+	// 			$ts1 = strtotime($date[0]);
+	// 			$ts2 = strtotime($date[1]);
 
-				$writer = new Xlsx($spreadsheet);
+	// 			$ts2 += 86400;	// tambah 1 hari (hitungan detik)
 
-				header('Content-Type: application/vnd.ms-excel');
-				header('Content-Disposition: attachment;filename="Absensi_' . $tanggal . '.xlsx"');
-				header('Cache-Control: max-age=0');
+	// 			$datamasuk = $this->m_admin->get_absensi("masuk", $ts1, $ts2);
+	// 			$datakeluar = $this->m_admin->get_absensi("keluar", $ts1, $ts2);
 
-				$writer->save('php://output');
-			} else {
-				redirect(base_url() . 'admin/absensi');
-			}
-		}
-	}
+	// 			$spreadsheet = new Spreadsheet;
+
+	// 			$spreadsheet->setActiveSheetIndex(0)
+	// 				->setCellValue('A1', 'No')
+	// 				->setCellValue('B1', 'Alat Absensi')
+	// 				->setCellValue('C1', 'Nama')
+	// 				->setCellValue('D1', 'Jabatan/Kelas')
+	// 				->setCellValue('E1', 'Keterangan')
+	// 				->setCellValue('F1', 'Waktu');
+
+	// 			$baris = 2;
+	// 			$spreadsheet->setActiveSheetIndex(0)
+	// 				->setCellValue('A' . $baris, "ABSENSI MASUK");
+	// 			$baris++;
+	// 			$nomor = 1;
+
+	// 			if (isset($datamasuk)) {
+	// 				foreach ($datamasuk as $masuk) {
+
+	// 					$waktu = date("H:i:s d M Y", $masuk->created_at);
+
+	// 					$spreadsheet->setActiveSheetIndex(0)
+	// 						->setCellValue('A' . $baris, $nomor)
+	// 						->setCellValue('B' . $baris, $masuk->nama_devices)
+	// 						->setCellValue('C' . $baris, $masuk->nama)
+	// 						->setCellValue('D' . $baris, $masuk->jabatan)
+	// 						->setCellValue('E' . $baris, $masuk->keterangan)
+	// 						->setCellValue('F' . $baris, $waktu);
+
+	// 					$baris++;
+	// 					$nomor++;
+	// 				}
+	// 			}
+
+	// 			$baris++;
+	// 			$spreadsheet->setActiveSheetIndex(0)
+	// 				->setCellValue('A' . $baris, "ABSENSI KELUAR");
+	// 			$baris++;
+	// 			$nomor = 1;
+
+	// 			if (isset($datakeluar)) {
+	// 				foreach ($datakeluar as $keluar) {
+
+	// 					$waktu = date("H:i:s d M Y", $keluar->created_at);
+
+	// 					$spreadsheet->setActiveSheetIndex(0)
+	// 						->setCellValue('A' . $baris, $nomor)
+	// 						->setCellValue('B' . $baris, $keluar->nama_devices)
+	// 						->setCellValue('C' . $baris, $keluar->nama)
+	// 						->setCellValue('D' . $baris, $keluar->jabatan)
+	// 						->setCellValue('E' . $baris, $keluar->keterangan)
+	// 						->setCellValue('F' . $baris, $waktu);
+
+	// 					$baris++;
+	// 					$nomor++;
+	// 				}
+	// 			}
+
+	// 			$writer = new Xlsx($spreadsheet);
+
+	// 			header('Content-Type: application/vnd.ms-excel');
+	// 			header('Content-Disposition: attachment;filename="Absensi_' . $tanggal . '.xlsx"');
+	// 			header('Cache-Control: max-age=0');
+
+	// 			$writer->save('php://output');
+	// 		} else {
+	// 			redirect(base_url() . 'admin/absensi');
+	// 		}
+	// 	}
+	// }
 }
