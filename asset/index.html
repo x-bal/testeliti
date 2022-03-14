@@ -1,0 +1,151 @@
+<html>
+	<head>
+		<title>Test Kecermatan</title>
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<link rel="stylesheet" href="bootstrap.min.css">
+		<link rel='stylesheet'  href='css.css'>
+		<link rel='stylesheet'  href='fontawesome/css/all.min.css'>
+	</head>
+	<body>
+		<div class="countdown-top">Waktu Habis Dalam  <h2><span id="time">02:00</span></h2> menit</div>
+		<div class="wrapper">
+			<div class="wrap">
+				<div class="text-center pb-4">
+					<div class="h5 font-weight-bold col-md-12"><span id="number"> </span>Petunjuk Soal </div>
+					<div class="h5 col-md-12">
+						<table class="h6 table table-bordered text-center">
+							<tr>
+								<th style="border-color:black;">A</th>
+								<th style="border-color:black;">B</th>
+								<th style="border-color:black;">C</th>
+								<th style="border-color:black;">D</th>
+								<th style="border-color:black;">E</th>
+							</tr>
+							<tr>
+								<td style="border-color:black;">7</td>
+								<td style="border-color:black;">2</td>
+								<td style="border-color:black;">9</td>
+								<td style="border-color:black;">0</td>
+								<td style="border-color:black;">8</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="text-center pb-4">
+					<div class="h5 font-weight-bold col-md-12"><span id="number"> </span>SOAL</div>
+					<div class="h5 col-md-12">
+						<table class="h6 table table-bordered text-center">
+							<tr>
+								<th style="border-color:black;">7</th>
+								<th style="border-color:black;">9</th>
+								<th style="border-color:black;">0</th>
+								<th style="border-color:black;">8</th>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<div class="h5 font-weight-bold"> Jawaban Anda</div>
+				<div class="pt-2">
+					<form name="jawaban"> 
+						<label class="options">A <input type="radio" name="radio" id="radioA" value="A" onclick="funcRadio()"> <span class="checkmark"></span> </label> 
+						<label class="options">B <input type="radio" name="radio" id="radioB" value="B" onclick="funcRadio()"> <span class="checkmark"></span> </label> 
+						<label class="options">C <input type="radio" name="radio" id="radioC" value="C" onclick="funcRadio()"> <span class="checkmark"></span> </label> 
+						<label class="options">D <input type="radio" name="radio" id="radioD" value="D" onclick="funcRadio()"> <span class="checkmark"></span> </label> 
+						<label class="options">E <input type="radio" name="radio" id="radioE" value="E" onclick="funcRadio()"> <span class="checkmark"></span> </label> 
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="footer bg-danger text-warning"><h2>Waktu Ujian <span id="totaltime">10:00</span> menit</h2></div>
+		<div class="d-flex flex-column">
+			<div class="h3 font-weight-bold text-white">Go Dark</div> <label class="switch"> <input type="checkbox"> <span class="slider round"></span> </label>
+		</div>
+		
+		<script src="jquery.min.js"></script>
+		<script src="bootstrap.bundle.min.js"></script>
+		<script>
+			var angkaMin = 2;
+			var angkaMinTotal = 10;
+			var timer;
+			var timerTotal;
+			var display;
+			var displayTotal;
+			var dataMinutes;
+			var dataMinutesTotal;
+
+			function startTimer(duration, display) {
+				timer = duration;
+				var minutes;
+				var seconds;
+				setInterval(function () {
+					minutes = parseInt(timer / 60, 10);
+					seconds = parseInt(timer % 60, 10);
+
+					minutes = minutes < 10 ? "0" + minutes : minutes;
+					seconds = seconds < 10 ? "0" + seconds : seconds;
+
+					display.textContent = minutes + ":" + seconds;
+
+					if (--timer < 0) {
+						timer = duration;
+						console.log("waktu habis");
+					}
+				}, 1000);
+			}
+			
+			function startTimerTotal(durationTotal, displayTotal) {
+				timerTotal = durationTotal;
+				var minutesTotal;
+				var secondsTotal;
+				setInterval(function () {
+					minutesTotal = parseInt(timerTotal / 60, 10);
+					secondsTotal = parseInt(timerTotal % 60, 10);
+
+					minutesTotal = minutesTotal < 10 ? "0" + minutesTotal : minutesTotal;
+					secondsTotal = secondsTotal < 10 ? "0" + secondsTotal : secondsTotal;
+
+					displayTotal.textContent = minutesTotal + ":" + secondsTotal;
+
+					if (--timerTotal < 0) {
+						timerTotal = durationTotal;
+						console.log("Total waktu habis");
+					}
+				}, 1000);
+			}
+
+			window.onload = function () {
+				dataMinutes = 60 * angkaMin;
+				dataMinutesTotal = 60 * angkaMinTotal;
+				display = document.querySelector('#time');
+				displayTotal = document.querySelector('#totaltime');
+				startTimer(dataMinutes, display);
+				startTimerTotal(dataMinutesTotal, displayTotal);
+			};
+			
+			function funcRadio() {
+				const form = document.forms.jawaban;
+				const checked = form.querySelector('input[name=radio]:checked');
+
+				console.log(checked.value);
+				
+				setTimeout(function(){ 
+					document.getElementById("radioA").checked = false;
+					document.getElementById("radioB").checked = false;
+					document.getElementById("radioC").checked = false;
+					document.getElementById("radioD").checked = false;
+					document.getElementById("radioE").checked = false;
+				}, 500); 
+				
+				//timer = dataMinutes = 60 * angkaMin;
+			}
+			
+			document.addEventListener('DOMContentLoaded', function() {
+				const main = document.querySelector('body')
+				const toggleSwitch = document.querySelector('.slider')
+				toggleSwitch.addEventListener('click', () => {
+					main.classList.toggle('dark-theme')
+				})
+			});
+		</script>
+	</body>
+</html>
