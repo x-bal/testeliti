@@ -195,12 +195,12 @@ class M_admin extends CI_Model
         return $this->db->get()->row()->no_soal;
     }
 
-    public function getLastSoal($idquiz)
+    public function checkSoal($no_soal, $id_quiz)
     {
         $this->db->select('no_soal');
         $this->db->from('soal');
-        $this->db->where('id_quiz', $idquiz);
-        $this->db->order_by('no_soal', 'DESC');
+        $this->db->where('no_soal', $no_soal);
+        $this->db->where('id_quiz', $id_quiz);
         return $this->db->get()->row()->no_soal;
     }
 

@@ -44,34 +44,32 @@
                   <input type="hidden" name="id_quiz" value="<?= $soal->id_quiz ?>">
                 <?php endif; ?>
 
-                <!-- <div class="form-group">
-                  <label for="type">Tipe Soal</label>
-                  <select name="type" id="type" class="form-control">
-                    <option disabled selected>-- Pilih Tipe Soal--</option>
-                    <option value="number">Number</option>
-                    <option value="char">Number & Alphabet</option>
-                  </select>
-                </div> -->
-
+                <div class="form-group">
+                  <label>
+                    No Soal* <br>
+                    <small>Mohon input no soal secara berurutan.</small>
+                  </label>
+                  <input type="number" maxlength="2" name="no_soal" id="no_soal" value="<?= $set == 'edit-soal' ? $soal->no_soal : set_value('no_soal') ?>" required class="form-control">
+                </div>
                 <div class="form-group">
                   <label>A</label>
-                  <input type="text" maxlength="2" name="a" id="a" value="<?= $set == 'edit-soal' ? $soal->a : '' ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
+                  <input type="text" maxlength="2" name="a" id="a" value="<?= $set == 'edit-soal' ? $soal->a : set_value('a') ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
                 </div>
                 <div class="form-group">
                   <label>B</label>
-                  <input type="text" maxlength="2" name="b" id="b" value="<?= $set == 'edit-soal' ? $soal->b : '' ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
+                  <input type="text" maxlength="2" name="b" id="b" value="<?= $set == 'edit-soal' ? $soal->b : set_value('b') ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
                 </div>
                 <div class="form-group">
                   <label>C</label>
-                  <input type="text" maxlength="2" name="c" id="c" value="<?= $set == 'edit-soal' ? $soal->c : '' ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
+                  <input type="text" maxlength="2" name="c" id="c" value="<?= $set == 'edit-soal' ? $soal->c : set_value('c') ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
                 </div>
                 <div class="form-group">
                   <label>D</label>
-                  <input type="text" maxlength="2" name="d" id="d" value="<?= $set == 'edit-soal' ? $soal->d : '' ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
+                  <input type="text" maxlength="2" name="d" id="d" value="<?= $set == 'edit-soal' ? $soal->d : set_value('d') ?>" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');" class="form-control">
                 </div>
                 <div class="form-group">
                   <label>E</label>
-                  <input type="text" maxlength="2" name="e" id="e" value="<?= $set == 'edit-soal' ? $soal->e : '' ?>" required class="form-control" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');">
+                  <input type="text" maxlength="2" name="e" id="e" value="<?= $set == 'edit-soal' ? $soal->e : set_value('e') ?>" required class="form-control" required oninput="this.value=this.value.replace(/[^0-9a-zA-Z]/g,'');">
                 </div>
                 <div class="form-group">
                   <button type="submit" class="btn btn-primary">Simpan</button>

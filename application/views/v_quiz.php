@@ -91,7 +91,7 @@
                             <td style="text-align:center">
                               <a href="<?= base_url() ?>admin/show_quiz/<?= $row->id ?>" class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>
                               <a href="<?= base_url() ?>admin/edit_quiz/<?= $row->id ?>" class="btn btn-info btn-sm"><i class="glyphicon glyphicon-pencil"></i></a>
-                              <a href="<?= base_url() ?>admin/hapus_quiz/<?= $row->id ?>" class="btn btn-danger btn-sm" onclick="return confirm('Anda Yakin menghapus data ini?')"><i class="glyphicon glyphicon-trash"></i></a>
+                              <a href="<?= base_url() ?>admin/delete_quiz/<?= $row->id ?>" class="btn btn-danger btn-sm" onclick="return confirm('Anda Yakin menghapus data ini?')"><i class="glyphicon glyphicon-trash"></i></a>
                             </td>
                           </tr>
                     <?php }
@@ -130,7 +130,7 @@
                     <table id="t1" class="table table-bordered table-striped">
                       <thead>
                         <tr>
-                          <th style="text-align:center">Soal</th>
+                          <th style="text-align:center">No Soal</th>
                           <th style="text-align:center">A</th>
                           <th style="text-align:center">B</th>
                           <th style="text-align:center">C</th>

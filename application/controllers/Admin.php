@@ -127,6 +127,26 @@ class Admin extends CI_Controller
 		$this->load->view('v_quiz', $data);
 	}
 
+	public function delete_quiz($id)
+	{
+		if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
+
+			$soal = $this->m_admin->getWhere('soal', ['id_quiz' => $id]);
+			foreach ($soal as $s) {
+				$this->m_admin->delete('soal', ['id_soal' => $s->id_soal]);
+			}
+
+			if ($this->m_admin->delete('quiz', ['id' => $id])) {
+				$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
+			} else {
+				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
+			}
+			redirect(base_url() . 'admin/quiz');
+		} else {
+			redirect(base_url() . 'admin');
+		}
+	}
+
 	public function add_soal($idQuiz)
 	{
 		if ($this->session->userdata('userlogin')) {
@@ -143,31 +163,37 @@ class Admin extends CI_Controller
 	{
 		if ($this->session->userdata('userlogin')) {     // mencegah akses langsung tanpa login
 			$id_quiz = $this->input->post('id_quiz');
+			$no_soal = $this->input->post('no_soal');
 			$a = $this->input->post('a');
 			$b = $this->input->post('b');
 			$c = $this->input->post('c');
 			$d = $this->input->post('d');
 			$e = $this->input->post('e');
 
-			$lastNumber = $this->m_admin->getLastSoal($id_quiz);
-			$no_soal = intval($lastNumber) + 1;
+			$check = $this->m_admin->checkSoal($no_soal, $id_quiz);
+			// var_dump($check);
+			// die;
+			if ($check == NULL) {
+				$data = array(
+					'id_quiz' => $id_quiz,
+					'no_soal' => $no_soal,
+					'a' => $a,
+					'b' => $b,
+					'c' => $c,
+					'd' => $d,
+					'e' => $e,
+				);
 
-			$data = array(
-				'id_quiz' => $id_quiz,
-				'no_soal' => $no_soal,
-				'a' => $a,
-				'b' => $b,
-				'c' => $c,
-				'd' => $d,
-				'e' => $e,
-			);
-
-			if ($this->m_admin->insert('soal', $data)) {
-				$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
+				if ($this->m_admin->insert('soal', $data)) {
+					$this->session->set_flashdata("pesan", "<div class=\"alert alert-success\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data berhasil di update</div>");
+				} else {
+					$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
+				}
+				redirect(base_url() . 'admin/show_quiz/' . $id_quiz);
 			} else {
-				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> Data gagal di update</div>");
+				$this->session->set_flashdata("pesan", "<div class=\"alert alert-danger\" id=\"alert\"><i class=\"glyphicon glyphicon-ok\"></i> No soal sudah digunakan</div>");
+				redirect(base_url() . 'admin/add_soal/' . $id_quiz);
 			}
-			redirect(base_url() . 'admin/show_quiz/' . $id_quiz);
 		} else {
 			redirect(base_url() . 'admin');
 		}
